@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>EShopper - Bootstrap Shop Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <!-- <link href="css/style1.css" rel="stylesheet"> -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 0.5%;
+        }
+
+        .upload-container input[type="file"] {
+            display: none;
+        }
+
+        .upload-button {
+            background-color: #d19c97;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .upload-button:hover {
+            color: #fff;
+            background-color: #d78981;
+        }
+
+        #imagePreview {
+            width: 400px;
+            /* Độ rộng mới */
+            height: 400px;
+            /* Chiều cao mới */
+            border: 1px dashed #ccc;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        #imagePreview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="header">
+		<div class="top-header">
+			<div class="container">
+				<div class="top-header-left">
+					<ul class="support">
+						<li><a href="#"><label> </label></a></li>
+						<li><a href="#">24x7 live<span class="live"> support</span></a></li>
+					</ul>
+					<ul class="support">
+						<li class="van"><a href="#"><label> </label></a></li>
+						<li><a href="#">Free shipping <span class="live">on order over 500</span></a></li>
+					</ul>
+					<div class="clearfix"> </div>
+				</div>
+				<div class="top-header-right">
+					<div class="down-top">
+						<select class="in-drop">
+							<option value="English" class="in-of">English</option>
+							<option value="Japanese" class="in-of">Japanese</option>
+							<option value="French" class="in-of">French</option>
+							<option value="German" class="in-of">German</option>
+						</select>
+					</div>
+					<div class="down-top top-down">
+						<select class="in-drop">
+
+							<option value="Dollar" class="in-of">Dollar</option>
+							<option value="Yen" class="in-of">Yen</option>
+							<option value="Euro" class="in-of">Euro</option>
+						</select>
+					</div>
+					<!---->
+					<div class="clearfix"> </div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+		<div class="bottom-header">
+			<div class="container">
+				<div class="header-bottom-left">
+					<div class="logo">
+						<a href="/home"><img src="/images/logo.png" alt=" " /></a>
+					</div>
+					<div class="search">
+						<form th:action="@{/products/title}" method="GET">
+							<input type="text" onfocus="this.value = '';"
+								onblur="if (this.value == '') {this.value = '';}"
+								name="name">
+							<input type="submit" value="SEARCH">
+						</form>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+				<div class="header-bottom-right">
+					<div class="account">
+						<a href="#" th:if="${checkLogin} == 1" th:text = "${account.fullname}"><span> </span></a>
+						<a href="#" th:if="${checkLogin} == 0"><span></span>YOUR ACCOUNT</a>
+					</div>
+					<ul class="login">
+						<li>
+							<a href="/logout" th:if="${checkLogin == 1}" th:text="LOGOUT"><span> </span></a>
+							<a href="/login" th:if="${checkLogin == 0}" th:text="LOGIN"><span> </span></a>
+						</li>
+						<li><a th:if="${checkLogin} == 0" href="/register">| SIGNUP</a></li>
+						<li><a th:if="${checkLogin == 1 && account.position == 'admin'}" href="/admin">| ADMIN</a></li>
+					</ul>
+					<div class="cart">
+						<a th:if="${checkLogin} == 1" href="/cart"><span> </span>CART</a>
+						<a th:if="${checkLogin} == 0" href="/login"><span> </span>CART</a>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+    <!-- Topbar End -->
+
+    <!-- Detail Start -->
+    <form th:object="${book}" th:action="@{/admin/save/{id}(id=${book.id})}" th:method="${id <= 0} ? POST : GET">
+        <div class="container-fluid pt-5">
+            <div class="text-center mb-4">
+                <h2 class="section-title px-5"><span class="px-2">Book</span></h2>
+            </div>
+            <div class="row px-xl-5">
+                <div class="col-lg-8">
+                    <div class="mb-4">
+                    	<p class="text-danger" th:text="${message}"></p>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Title</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="title" th:value="${book.title}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="title" th:value="${book.title}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="title" th:value="${book.title}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);;">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Author</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="author" th:value="${book.author}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="author" th:value="${book.author}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="author" th:value="${book.author}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+
+                            <div class="col-md-6 col-lg-12 form-group">
+                                <label>Description</label>
+                                <textarea th:if="${book.id <= 0}" class="form-control" type="text" cols="50"
+                                    rows="7" name="description" th:value="${book.description}" th:text="${book.description}" style="overflow: hidden; resize: none"></textarea>
+                                <textarea th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" cols="50"
+                                    rows="7" name="description" th:value="${book.description}" th:text="${book.description}" style="overflow: hidden; resize: none"></textarea>
+                                <textarea th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" cols="50"
+                                    rows="7" name="description" th:value="${book.description}" th:text="${book.description}" readonly="readonly" style="overflow: hidden; resize: none; background-color: rgba(60,67,67,0.3);"></textarea>
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Publish Year</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="publishYear" th:value="${book.publishYear}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="publishYear" th:value="${book.publishYear}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="publishYear" th:value="${book.publishYear}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Number of Pages</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="numberOfPages" th:value="${book.numberOfPages}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="numberOfPages" th:value="${book.numberOfPages}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="numberOfPages" th:value="${book.numberOfPages}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Cost</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="cost" th:value="${book.cost}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="cost" th:value="${book.cost}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="cost" th:value="${book.cost}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Price</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="price" th:value="${book.price}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="price" th:value="${book.price}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="price" th:value="${book.price}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Cover</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="coverKind" th:value="${book.coverKind}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="coverKind" th:value="${book.coverKind}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="coverKind" th:value="${book.coverKind}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Amount</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="amount" th:value="${book.amount}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="amount" th:value="${book.amount}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="amount" th:value="${book.amount}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                <label>Publisher</label>
+                                <input th:if="${book.id <= 0}" class="form-control" type="text" name="publisher" th:value="${book.publisher}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave == 2}" class="form-control" type="text" name="publisher" th:value="${book.publisher}" required="required">
+                                <input th:if="${book.id > 0 && editOrSave != 2}" class="form-control" type="text" name="publisher" th:value="${book.publisher}" readonly="readonly" style="background-color: rgba(60,67,67,0.3);">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <label>Categories</label><br>
+                                <div class="row">
+                                    <div class="form-check" th:each="cate: ${categories}" style="width: 20%">
+                                        <label class="checkbox">
+                                        	<input th:if="${book.id <= 0}" type="checkbox" name="checkbox" th:value="${cate.id}" th:text="${cate.name}" th:checked="${idCategoriesByBook.contains(cate.id)}"><i></i>
+                                            <input th:if="${book.id > 0 && editOrSave == 2}" type="checkbox" name="checkbox" th:value="${cate.id}" th:text="${cate.name}" th:checked="${idCategoriesByBook.contains(cate.id)}"><i></i>
+                                            <input th:if="${book.id > 0 && editOrSave != 2}" type="checkbox" name="checkbox" th:value="${cate.id}" th:text="${cate.name}" th:checked="${idCategoriesByBook.contains(cate.id)}" disabled><i></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="mb-5">
+                        <div class="upload-container">
+                            <label for="imageUpload" class="btn btn-primary">Upload</label>
+                            <input th:if="${book.id <= 0}" type="file" name="image" id="imageUpload" th:value="${book.image}">
+                            <input th:if="${book.id > 0 && editOrSave == 2}" type="file" name="image" id="imageUpload" th:value="${book.image}">
+                            <input th:if="${book.id > 0 && editOrSave != 2}" type="file" name="image" id="imageUpload" th:value="${book.image}" disabled >
+                            <div id="imagePreview" style="display: flex; flex-direction: column; justify-content: flex-end;" th:text="${book.image}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer border-secondary bg-transparent text-right">
+        	<button onclick="return confirm('Do you want to add this new book?')" th:if="${book.id} <= 0" class="btn btn-lg btn-primary" type="submit">Add</button>
+        	<button onclick="return confirm('Do you want to update this book?')" th:if="${book.id > 0 && editOrSave == 2}" class="btn btn-lg btn-primary" type="submit">Save</button>
+            <a th:if="${book.id > 0 && editOrSave != 2}" class="btn btn-lg btn-primary" th:href="@{/admin/book/{id}(id=${book.id})}">Edit</a>
+        </div>
+    </form>
+
+    <!-- Detail End -->
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('imagePreview');
+                output.innerHTML = '<img src="' + reader.result + '" alt="Preview">';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        var imageUpload = document.getElementById('imageUpload');
+        imageUpload.addEventListener('change', previewImage);
+    </script>
+    
+    <script>
+		// Chờ cho tài liệu HTML tải xong
+		document.addEventListener("DOMContentLoaded", function() {
+			// Lấy đối tượng div imagePreview
+			var imagePreview = document.getElementById("imagePreview");
+			
+			var text = imagePreview.textContent; // hoặc myDiv.innerText
+			console.log(text);
+			
+			// Tạo một đối tượng hình ảnh mặc định
+			var defaultImage = new Image();
+			defaultImage.src = text;
+			
+
+			// Gán hình ảnh mặc định vào vùng xem trước
+			imagePreview.appendChild(defaultImage);
+		});
+	</script>
+
+    <!-- Footer Start -->
+    <div class="footer">
+		<div class="footer-top">
+			<div class="container">
+				<div class="latter">
+					<h6>NEWS-LETTER</h6>
+					<div class="sub-left-right">
+						<form>
+							<input type="text" value="Enter email here" onfocus="this.value = '';"
+								onblur="if (this.value == '') {this.value = 'Enter email here';}" />
+							<input type="submit" value="SUBSCRIBE" />
+						</form>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+				<div class="latter-right">
+					<p>FOLLOW US</p>
+					<ul class="face-in-to">
+						<li><a href="#"><span> </span></a></li>
+						<li><a href="#"><span class="facebook-in"> </span></a></li>
+						<div class="clearfix"> </div>
+					</ul>
+					<div class="clearfix"> </div>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<div class="container">
+				<div class="footer-bottom-cate">
+					<h6>CATEGORIES</h6>
+					<ul>
+						<li th:each="cate: ${categories}"><a href="#" th:text="${cate.name}"></a></li>
+					</ul>
+				</div>
+				<div class="footer-bottom-cate bottom-grid-cat">
+					<h6>FEATURE PROJECTS</h6>
+					<ul>
+						<li><a href="#">Curabitur sapien</a></li>
+						<li><a href="#">Dignissim purus</a></li>
+						<li><a href="#">Tempus pretium</a></li>
+						<li><a href="#">Dignissim neque</a></li>
+						<li><a href="#">Ornared id aliquet</a></li>
+						<li><a href="#">Ultrices id du</a></li>
+						<li><a href="#">Commodo sit</a></li>
+					</ul>
+				</div>
+				<div class="footer-bottom-cate">
+					<h6>TOP BRANDS</h6>
+					<ul>
+						<li><a href="#">Curabitur sapien</a></li>
+						<li><a href="#">Dignissim purus</a></li>
+						<li><a href="#">Tempus pretium</a></li>
+						<li><a href="#">Dignissim neque</a></li>
+						<li><a href="#">Ornared id aliquet</a></li>
+						<li><a href="#">Ultrices id du</a></li>
+						<li><a href="#">Commodo sit</a></li>
+						<li><a href="#">Urna ac tortor sc</a></li>
+						<li><a href="#">Ornared id aliquet</a></li>
+						<li><a href="#">Urna ac tortor sc</a></li>
+						<li><a href="#">Eget nisi laoreet</a></li>
+						<li><a href="#">Faciisis ornare</a></li>
+					</ul>
+				</div>
+				<div class="footer-bottom-cate cate-bottom">
+					<h6>OUR ADDERSS</h6>
+					<ul>
+						<li>Aliquam metus dui. </li>
+						<li>orci, ornareidquet</li>
+						<li> ut,DUI.</li>
+						<li>nisi, dignissim</li>
+						<li>gravida at.</li>
+						<li class="phone">PH : 6985792466</li>
+						<li class="temp">
+							<p class="footer-class">Design by <a href="http://w3layouts.com/"
+									target="_blank">W3layouts</a> </p>
+						</li>
+					</ul>
+				</div>
+				<div class="clearfix"> </div>
+			</div>
+		</div>
+	</div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+</body>
+</html>
